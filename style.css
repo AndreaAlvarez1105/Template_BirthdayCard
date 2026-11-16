@@ -4,15 +4,21 @@
 }
 body {
   margin: 0;
-  padding: 0;
+  padding: 16px;
+  box-sizing: border-box;
   font-family: 'Pixelify Sans', sans-serif;
-  height: 100vh;
+  min-height: 100vh;
+  min-height: 100dvh; /* altura real en móviles (barra del navegador) */
   display: flex;
   justify-content: center;
   align-items: center;
-
+  overflow-x: hidden;
 }
 
+/* Escala del pastel: se reduce según el tamaño de pantalla */
+:root {
+  --s: 8.5;
+}
 
 #birthdayText {
   font-size: 3rem;
@@ -26,22 +32,28 @@ body {
   flex-direction: column;
   align-items: center;
   text-align: center;
-  padding-bottom: 500px;
 }
+
+/* Caja con el tamaño real del pastel ya escalado (el pastel mide ~56x53 px sin escalar) */
 .cake-container {
-    padding-right: 500px;
-}
-.cake {
   position: relative;
+  width: calc(56px * var(--s));
+  height: calc(53px * var(--s));
+  flex-shrink: 0;
+}
+
+.cake {
+  position: absolute;
+  left: calc(-4px * var(--s));
+  top: calc(-12px * var(--s));
+  transform-origin: 0 0;
+  transform: scale(var(--s));
   animation: cake 1s infinite;
   -webkit-animation: cake 1s infinite;
   -moz-animation: cake 1s infinite;
-
   -o-animation: cake 1s infinite;
-  transform: scale(8.5);
-    z-index: 1; /* optional */
+  z-index: 1;
   overflow: visible; /* allow candles to "escape" */
-
 }
 
 @keyframes cake {
@@ -6905,21 +6917,6 @@ body {
   transform: scale(1.15);
 }
 
-/* En pantallas angostas las cartas bajan a las esquinas inferiores */
-@media (max-width: 900px) {
-  .letters-container {
-    align-items: flex-end;
-    padding-bottom: 16px;
-  }
-  .letters-side {
-    flex-direction: row; /* en pantallas angostas se ponen en fila */
-    gap: 12px;
-  }
-  .letter-icon {
-    width: 44px;
-  }
-}
-
 /* Animación de levitación */
 @keyframes flotar {
   0%, 100% { transform: translateY(0); }
@@ -6949,6 +6946,9 @@ body {
   text-align: center;
   max-width: 90%;
   width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-sizing: border-box;
   position: relative;
   box-shadow: 0 8px 30px rgba(0,0,0,0.3);
   border: 4px solid #333; /* Estilo retro/pixel */
@@ -6981,4 +6981,57 @@ body {
   object-fit: cover;
   border: 2px solid #333;
   border-radius: 4px;
+}
+
+/* =========================================
+   Responsive
+   ========================================= */
+@media (max-width: 1000px) { :root { --s: 7; } }
+@media (max-height: 760px) and (min-width: 701px) { :root { --s: 7; } }
+@media (max-height: 640px) and (min-width: 701px) { :root { --s: 5.5; } }
+
+/* Teléfono en vertical */
+@media (max-width: 700px) {
+  :root { --s: 5.5; }
+
+  #birthdayText { margin-bottom: 12px; }
+
+  .container { padding-bottom: 90px; } /* espacio para la fila de cartas */
+
+  .letters-container {
+    align-items: flex-end;
+    justify-content: center;
+    gap: 28px;
+    padding: 0 12px 18px;
+  }
+  .letters-side {
+    flex-direction: row;
+    gap: 14px;
+  }
+  .letter-icon { width: 44px; }
+
+  .carta-contenido { padding: 28px 20px; }
+  .imagenes-carta { flex-wrap: wrap; }
+  .imagenes-carta img { width: 100px; height: 100px; }
+}
+
+@media (max-width: 380px) { :root { --s: 5; } }
+
+/* Teléfono en horizontal (poca altura): cartas a los lados */
+@media (max-height: 500px) {
+  :root { --s: 3.5; }
+  body { padding: 8px; }
+  .container { padding-bottom: 0; }
+  #birthdayText { margin-bottom: 4px; }
+  .letters-container {
+    align-items: center;
+    justify-content: space-between;
+    gap: 0;
+    padding: 0 16px;
+  }
+  .letters-side { flex-direction: column; gap: 12px; }
+  .letter-icon { width: 40px; }
+
+  .modal-oculto { overflow-y: auto; }
+  .carta-contenido { max-height: 90vh; overflow-y: auto; padding: 20px; }
 }
